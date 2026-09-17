@@ -1,0 +1,49 @@
+{
+  "name": "sola_api",
+  "version": "1.0.0",
+  "description": "Sri Lankan solar generation REST API coursework",
+  "main": "app.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "seed": "node src/seed/seed.js",
+    "seed:users": "node src/seed/users.js",
+    "setup:auth": "node scripts/setupAuth.js",
+    "verify:auth": "node scripts/verifyAuth.js",
+    "issue:device-token": "node src/seed/issueDeviceToken.js",
+    "verify:solar": "node scripts/verifySolar.js",
+    "test": "jest --runInBand",
+    "test:coverage": "jest --runInBand --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Indipa123/SolarAPI.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Indipa123/SolarAPI/issues"
+  },
+  "homepage": "https://github.com/Indipa123/SolarAPI#readme",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-validator": "^7.3.2",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.10.0"
+  },
+  "devDependencies": {
+    "jest": "^30.5.1",
+    "nodemon": "^3.1.14",
+    "supertest": "^7.2.2"
+  }
+}
