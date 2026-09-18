@@ -38,7 +38,7 @@ Alternatively, run `npm run setup:auth` to generate missing values directly in `
 - `GET /api/v1/installations/:installationId/readings`
 - `GET /api/v1/installations/:installationId/readings/:readingId`
 
-Unknown routes and malformed/oversized JSON use a consistent error envelope. Helmet adds security headers; request bodies are limited to 100 KB. Swagger and the global analytics route are still pending.
+Unknown routes and malformed/oversized JSON use a consistent error envelope. Helmet adds security headers; request bodies are limited to 100 KB. Swagger is available at `/api-docs/`; the OpenAPI document is at `/openapi.json`.
 
 All geographic, installation and reading `GET` routes require a Bearer token for an SLSEA user. National users can read all data; province users can read only their own province and its descendants; district users can read only their own district and its descendants. `POST /api/v1/installations/:installationId/readings` requires a device Bearer token with `reading:write` scope for that exact installation. Device tokens cannot read data and user tokens cannot submit readings.
 
@@ -77,7 +77,7 @@ npm test
 npm run test:coverage
 ```
 
-The 53 automated tests run without MongoDB and cover model validation, HTTP errors, solar-generation invariants, login, invalid/expired tokens, device scope, jurisdiction checks, and strict reading payload validation.
+The 66 automated tests run without MongoDB and cover model validation, HTTP errors, solar-generation invariants, login, invalid/expired tokens, device scope, jurisdiction checks, analytics, HTTP caching, Swagger and strict reading payload validation.
 
 After seeding the data and demo users, `npm run verify:solar` logs in as the national user, performs read-only database-backed HTTP checks, and checks the installed unique reading index. `npm run verify:auth` logs in with all three roles, tests allowed/denied reads, issues a device token in memory, submits one demonstration reading and checks duplicate rejection. Credentials and tokens are never printed. These scripts require Atlas connectivity and development dependencies.
 
@@ -89,4 +89,4 @@ The seed uses a fixed window of September 6–12, 2026 in Sri Lanka time (UTC+05
 
 Geography is updated by code; demo installations are inserted by meter ID. Readings use insert-only upserts keyed by installation and timestamp, so reruns preserve existing readings and do not extend the window. No collections are deleted. Seed meters use the `DEMO-` prefix.
 
-See [the implementation checklist](docs/IMPLEMENTATION.md) for remaining work. No public deployment or Swagger URL exists yet.
+The public coursework deployment is available at https://solar-api-puce.vercel.app. Its Swagger page is https://solar-api-puce.vercel.app/api-docs/. See [the deployment record](docs/DEPLOYMENT.md) and [evidence guide](docs/EVIDENCE.md) for verification and screenshots.
