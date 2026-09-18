@@ -21,6 +21,9 @@ app.use(cors());
 app.use(express.json({ limit: '100kb' }));
 app.get('/api-docs/swagger-ui.css', (req, res) => res.sendFile(swaggerAssets.css));
 app.get('/api-docs/swagger-ui-bundle.js', (req, res) => res.sendFile(swaggerAssets.bundle));
+app.get('/api-docs/swagger-init.js', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/api-docs/swagger-init.js'));
+});
 app.get(['/api-docs', '/api-docs/'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public/api-docs/index.html'));
 });
