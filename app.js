@@ -2,7 +2,6 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const mongoose = require('mongoose');
-const swaggerUiDist = require('swagger-ui-dist');
 const path = require('node:path');
 const ApiError = require('./src/utils/ApiError');
 const errorHandler = require('./src/middleware/errorHandler');
@@ -11,12 +10,17 @@ const connectDatabase = require('./src/config/database');
 
 const app = express();
 let serverlessDatabaseReady;
+const swaggerAssets = {
+  css: require.resolve('swagger-ui-dist/swagger-ui.css'),
+  bundle: require.resolve('swagger-ui-dist/swagger-ui-bundle.js'),
+};
 app.disable('x-powered-by');
 app.set('etag', false);
 app.use(helmet());
 app.use(cors());
 app.use(express.json({ limit: '100kb' }));
-app.use('/api-docs', express.static(swaggerUiDist.getAbsoluteFSPath(), { index: false }));
+app.get('/api-docs/swagger-ui.css', (req, res) => res.sendFile(swaggerAssets.css));
+app.get('/api-docs/swagger-ui-bundle.js', (req, res) => res.sendFile(swaggerAssets.bundle));
 app.get(['/api-docs', '/api-docs/'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public/api-docs/index.html'));
 });
