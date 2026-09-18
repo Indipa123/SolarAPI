@@ -5,13 +5,28 @@ const mongoose = require('mongoose');
 const ApiError = require('./src/utils/ApiError');
 const errorHandler = require('./src/middleware/errorHandler');
 const geographyRoutes = require('./src/routes/geographyRoutes');
+const connectDatabase = require('./src/config/database');
 
 const app = express();
+let serverlessDatabaseReady;
 app.disable('x-powered-by');
 app.set('etag', false);
 app.use(helmet());
 app.use(cors());
 app.use(express.json({ limit: '100kb' }));
+
+if (process.env.VERCEL) {
+  app.use(async (req, res, next) => {
+    try {
+      if (!serverlessDatabaseReady) serverlessDatabaseReady = connectDatabase();
+      await serverlessDatabaseReady;
+      next();
+    } catch (error) {
+      serverlessDatabaseReady = undefined;
+      next(new ApiError(503, 'DATABASE_UNAVAILABLE', 'The database is temporarily unavailable.'));
+    }
+  });
+}
 app.get('/health', (req, res) => {
   res.set('Cache-Control', 'no-store').json({ status: 'UP', timestamp: new Date().toISOString() });
 });
