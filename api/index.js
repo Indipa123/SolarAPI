@@ -6,6 +6,14 @@ const connectDatabase = require('../src/config/database');
 let databaseReady;
 
 module.exports = async (req, res) => {
+  const requestUrl = new URL(req.url, 'http://localhost');
+  const originalPath = requestUrl.searchParams.get('__path');
+  if (originalPath) {
+    requestUrl.searchParams.delete('__path');
+    const query = requestUrl.searchParams.toString();
+    req.url = `${originalPath.startsWith('/') ? originalPath : `/${originalPath}`}${query ? `?${query}` : ''}`;
+  }
+
   try {
     if (!databaseReady) databaseReady = connectDatabase();
     await databaseReady;
