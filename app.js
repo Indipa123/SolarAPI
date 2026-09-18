@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const mongoose = require('mongoose');
+const swaggerUiDist = require('swagger-ui-dist');
+const path = require('node:path');
 const ApiError = require('./src/utils/ApiError');
 const errorHandler = require('./src/middleware/errorHandler');
 const geographyRoutes = require('./src/routes/geographyRoutes');
@@ -14,6 +16,11 @@ app.set('etag', false);
 app.use(helmet());
 app.use(cors());
 app.use(express.json({ limit: '100kb' }));
+app.use('/api-docs', express.static(swaggerUiDist.getAbsoluteFSPath(), { index: false }));
+app.get(['/api-docs', '/api-docs/'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/api-docs/index.html'));
+});
+app.get('/openapi.json', (req, res) => res.json(require('./src/config/swagger')));
 
 if (process.env.VERCEL) {
   app.use(async (req, res, next) => {
@@ -41,9 +48,6 @@ app.use('/api/v1/auth', require('./src/routes/authRoutes'));
 app.use('/api/v1', geographyRoutes);
 app.use('/api/v1', require('./src/routes/installationRoutes'));
 app.use('/api/v1', require('./src/routes/analyticsRoutes'));
-app.get('/openapi.json', (req, res) => res.json(require('./src/config/swagger')));
-const swaggerUi = require('swagger-ui-express');
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(require('./src/config/swagger'), { swaggerOptions: { persistAuthorization: false } }));
 app.get('/', (req, res) => res.redirect('/api-docs'));
 app.use((req, res, next) => next(new ApiError(404, 'NOT_FOUND', 'The requested resource does not exist.')));
 app.use(errorHandler);

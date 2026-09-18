@@ -5,5 +5,3 @@ node_modules/
 coverage/
 .DS_Store
 .deep-copilot/
-/public/api-docs/swagger-ui.css
-/public/api-docs/swagger-ui-bundle.js
