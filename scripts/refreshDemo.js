@@ -31,5 +31,15 @@ async function run() {
   await Reading.collection.updateMany({ updatedAt: { $exists: false } }, { $set: { updatedAt: new Date() } });
   console.log(`Refreshed ${items.length} demo installations through the latest completed quarter hour; existing readings retained.`);
 }
-if (require.main === module) run().catch(() => { console.error('Demo refresh failed. Check database access and seed data.'); process.exitCode = 1; }).finally(() => mongoose.disconnect());
+function safeErrorMessage(error) {
+  const message = String(error && error.message ? error.message : error || 'Unknown error');
+  return message
+    .replace(/mongodb(?:\+srv)?:\/\/[^\s@/]+@/gi, 'mongodb://[credentials hidden]@')
+    .replace(/password=[^&\s]+/gi, 'password=[hidden]');
+}
+
+if (require.main === module) run().catch(error => {
+  console.error(`Demo refresh failed: ${safeErrorMessage(error)}`);
+  process.exitCode = 1;
+}).finally(() => mongoose.disconnect());
 module.exports = { rollingRows };
