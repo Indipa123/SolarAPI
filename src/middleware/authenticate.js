@@ -43,4 +43,14 @@ function requireDeviceForInstallation(req, res, next) {
   return next();
 }
 
-module.exports = { authenticate, requireUser, requireDeviceForInstallation };
+async function requireInstallationAdmin(req, res, next) {
+  try {
+    const User = require('../models/User');
+    if (req.auth.type !== 'USER' || !req.auth.permissions?.includes('installation:manage') ||
+      !await User.exists({ _id: req.auth.sub, installationAdmin: true })) {
+      throw new ApiError(403, 'FORBIDDEN', 'Installation administration permission is required.');
+    }
+    next();
+  } catch (error) { next(error); }
+}
+module.exports = { authenticate, requireUser, requireDeviceForInstallation, requireInstallationAdmin };

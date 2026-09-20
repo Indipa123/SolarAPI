@@ -36,7 +36,16 @@ function guard(resolve, parameter) {
   };
 }
 
-exports.province = guard(async (id) => ({ provinceId: id, districtId: null }), 'provinceId');
+exports.province = async (req, res, next) => {
+  try {
+    const id = ensureObjectId(req.params.provinceId, 'provinceId');
+    if (req.auth.role === 'DISTRICT') {
+      if (await districtProvince(req.auth.districtId) !== id) throw forbidden();
+      req.accessibleDistrictId = req.auth.districtId;
+    } else await assertAccess(req.auth, id, null);
+    next();
+  } catch (error) { next(error); }
+};
 exports.district = guard(async (id) => {
   const provinceId = await districtProvince(id);
   return provinceId ? { provinceId, districtId: id } : null;

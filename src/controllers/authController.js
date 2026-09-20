@@ -4,7 +4,7 @@ const ApiError = require('../utils/ApiError');
 const { signUser } = require('../config/auth');
 
 exports.login = async (req, res) => {
-  const user = await User.findOne({ email: req.body.email }).select('+passwordHash');
+  const user = await User.findOne({ email: req.body.email }).select('+passwordHash +installationAdmin');
   const valid = user && await bcrypt.compare(req.body.password, user.passwordHash);
   if (!valid) throw new ApiError(401, 'INVALID_CREDENTIALS', 'Email or password is incorrect.');
   const token = signUser(user);

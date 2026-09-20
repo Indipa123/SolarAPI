@@ -35,9 +35,9 @@ async function verify() {
   assert(new Date(next.body.data[0].timestamp) > new Date(first.body.data[2].timestamp));
   const latest = await api.get(`${base}/latest-reading`).expect(200);
   const descending = await api.get(`${base}/readings?pageSize=1`).expect(200);
-  assert.equal(descending.body.data[0]._id, latest.body._id);
-  await api.get(`${base}/readings/${latest.body._id}`).expect(200);
-  await api.get(`/api/v1/installations/${items[1]._id}/readings/${latest.body._id}`).expect(404);
+  assert.equal(descending.body.data[0]._id, latest.body.reading._id);
+  await api.get(`${base}/readings/${latest.body.reading._id}`).expect(200);
+  await api.get(`/api/v1/installations/${items[1]._id}/readings/${latest.body.reading._id}`).expect(404);
   const filtered = await api.get(`${base}/readings`).query({ from: first.body.data[0].timestamp, to: first.body.data[2].timestamp }).expect(200);
   assert.equal(filtered.body.pagination.totalCount, 3);
   await api.get(`${base}/readings?from=invalid`).expect(400);

@@ -13,10 +13,10 @@ const findOrNotFound = async (Model, id, label) => {
 
 exports.listProvinces = async (provinceId) => ({ data: await Province.find(provinceId ? { _id: provinceId } : {}).select(projection).sort({ name: 1 }).lean() });
 exports.getProvince = async (provinceId) => findOrNotFound(Province, ensureObjectId(provinceId, 'provinceId'), 'Province');
-exports.listDistricts = async (provinceId) => {
+exports.listDistricts = async (provinceId, districtId) => {
   const id = ensureObjectId(provinceId, 'provinceId');
   await findOrNotFound(Province, id, 'Province');
-  return { data: await District.find({ province: id }).select(projection).sort({ name: 1 }).lean() };
+  return { data: await District.find({ province: id, ...(districtId ? { _id: districtId } : {}) }).select(projection).sort({ name: 1 }).lean() };
 };
 exports.getDistrict = async (districtId) => findOrNotFound(District, ensureObjectId(districtId, 'districtId'), 'District');
 exports.listSubstations = async (districtId) => {

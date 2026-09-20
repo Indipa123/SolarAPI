@@ -38,4 +38,10 @@ async function create(id, values) {
     powerKw: reading.powerKw, energyKwh: reading.energyKwh, voltage: reading.voltage };
 }
 
-module.exports = { history, get, create };
+async function latest(id, now = new Date()) {
+  const reading = await get(id);
+  const ageSeconds = Math.floor((now - new Date(reading.timestamp)) / 1000);
+  return { installationId: id, reading, observedAt: now.toISOString(), ageSeconds,
+    freshnessThresholdSeconds: 1800, isStale: ageSeconds > 1800 || ageSeconds < 0 };
+}
+module.exports = { history, get, create, latest };

@@ -1,4 +1,4 @@
-const { createHash } = require('node:crypto');
+const { tag: entityTag } = require('../utils/entityTag');
 const ApiError = require('../utils/ApiError');
 
 module.exports = (req, res, next) => {
@@ -11,8 +11,7 @@ module.exports = (req, res, next) => {
   const json = res.json;
   res.json = function (payload) {
     if (['GET', 'HEAD'].includes(req.method) && this.statusCode === 200) {
-      const serialized = JSON.stringify(payload);
-      const tag = `"${createHash('sha256').update(serialized).digest('hex')}"`;
+      const tag = entityTag(payload);
       this.set('ETag', tag);
       this.set('Cache-Control', 'private, no-cache');
       // Atomic documents have reliable modification metadata. Collections and

@@ -11,6 +11,7 @@ function expiry() { return process.env.JWT_EXPIRES_IN || '1h'; }
 
 function signUser(user) {
   const payload = { type: 'USER', role: user.role };
+  if (user.installationAdmin === true) payload.permissions = ['installation:manage'];
   if (user.role === 'PROVINCE') payload.provinceId = user.province.toString();
   if (user.role === 'DISTRICT') payload.districtId = user.district.toString();
   return jwt.sign(payload, secret(), { subject: user._id.toString(), expiresIn: expiry(), algorithm: 'HS256' });

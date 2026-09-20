@@ -29,13 +29,18 @@ Reference: user-provided `NB6007CEM_Node_Express_MongoDB_APlus_Guide.md`.
 - [x] OpenAPI documentation and Swagger UI
 - [x] Database-backed integration and security tests
 - [x] Local authentication configuration generated without printing secrets
-- [x] Offline test suite: 66 tests passed September 17
+- [x] Installation administration: create, PUT, PATCH, soft DELETE, ETag If-Match, 428 and 412
+- [x] Device credential exchange, short-lived installation token, and bounded per-instance authentication throttling
+- [x] Derived latest-reading representation with freshness status
+- [x] District parent-province access made consistent
+- [x] Rolling seed window and seed metadata backfill utility
+- [x] Offline test suite: 73 tests passed September 20
 - [x] Provision demo users and execute updated authenticated solar/security verification against Atlas
 - [x] HTTPS deployment and readiness verification at `solar-api-puce.vercel.app` on September 18
 - [x] Incremental Git commits as milestones are reviewed
 - [ ] Student-authored report, truthful AI disclosure, declaration and viva preparation
 
-Do not expose resource routes publicly until authentication and authorization are tested. No Device collection is planned. Reading measurements will be append-only through the HTTP API. The optional mutable-resource admin routes and If-Match support are deferred until needed.
+Do not expose resource routes publicly until authentication and authorization are tested. No Device collection is planned. Reading measurements remain append-only through the HTTP API. Installation metadata is a separate, administratively managed mutable resource.
 
 Seed-data energy semantics: plan to use meter-lifetime cumulative kWh and document the initial synthetic baseline; solar generation must follow Sri Lanka local daytime (UTC+05:30).
 

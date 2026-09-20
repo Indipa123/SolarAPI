@@ -4,6 +4,7 @@ const schema = new Schema({
   name,
   email: { type: String, required: true, unique: true, lowercase: true, trim: true, match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ },
   passwordHash: { type: String, required: true, select: false },
+  installationAdmin: { type: Boolean, default: false, select: false },
   role: { type: String, required: true, enum: ['NATIONAL', 'PROVINCE', 'DISTRICT'] },
   province: { type: Schema.Types.ObjectId, ref: 'Province', default: null },
   district: { type: Schema.Types.ObjectId, ref: 'District', default: null },

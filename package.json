@@ -8,6 +8,8 @@
     "dev": "nodemon server.js",
     "seed": "node src/seed/seed.js",
     "seed:users": "node src/seed/users.js",
+    "seed:admin": "node scripts/provisionAdmin.js",
+    "seed:refresh": "node scripts/refreshDemo.js",
     "setup:auth": "node scripts/setupAuth.js",
     "verify:auth": "node scripts/verifyAuth.js",
     "issue:device-token": "node src/seed/issueDeviceToken.js",

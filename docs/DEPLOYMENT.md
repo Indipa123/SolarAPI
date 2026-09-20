@@ -7,8 +7,8 @@
 ## Configuration
 
 - Source repository: `Indipa123/SolarAPI`, branch `main`.
-- Vercel uses `api/index.js` as the serverless request handler and `vercel.json` rewrites all routes to it.
-- The handler connects to MongoDB before passing the request to the existing Express app.
+- Vercel detects the Express framework from `vercel.json` and deploys the exported Express application in `app.js`.
+- The application connects to MongoDB before protected routes run in the serverless environment.
 - Production environment variables are `MONGODB_URI`, `NODE_ENV=production`, `JWT_SECRET`, and `JWT_EXPIRES_IN=1h`. They are configured in Vercel and must never be committed or included in evidence screenshots.
 - Atlas Network Access includes the `0.0.0.0/0` entry labelled `Vercel Hobby`, because Hobby deployments do not have a fixed outbound IP address. Atlas database-user authentication remains required.
 
