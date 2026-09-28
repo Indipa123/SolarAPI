@@ -49,6 +49,15 @@ test('device credential exchange creates a token only when the stored hash match
   await request(app).post('/api/v1/auth/device-token').send({ meterId: 'METER-001', apiKey: 'b'.repeat(64) }).expect(401);
 });
 
+test('device credential provisioning accepts a POST without a request body', async () => {
+  allowAdmin(); currentInstallation();
+  jest.spyOn(Installation, 'updateOne').mockResolvedValue({ matchedCount: 1 });
+  const response = await request(app).post(`/api/v1/installations/${id}/device-credentials`)
+    .set('Authorization', `Bearer ${adminToken}`).expect(201);
+  expect(response.body).toEqual(expect.objectContaining({ installationId: id, meterId: 'METER-001' }));
+  expect(response.body.apiKey).toMatch(/^[a-f0-9]{64}$/);
+});
+
 test('latest reading is an operational representation with freshness fields', async () => {
   currentInstallation();
   jest.spyOn(Reading, 'findOne').mockReturnValue({ sort: () => ({ select: () => ({ lean: async () => ({ _id: stationId, installation: id, timestamp: new Date(Date.now() - 60000), powerKw: 4, energyKwh: 100, voltage: 230 }) }) }) });

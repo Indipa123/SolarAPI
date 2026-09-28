@@ -5,7 +5,8 @@ module.exports = (req, res, next) => {
   res.vary('Accept');
   res.vary('Authorization');
   if (!req.accepts('json')) return next(new ApiError(406, 'NOT_ACCEPTABLE', 'This API provides application/json responses.'));
-  if (['POST', 'PUT', 'PATCH'].includes(req.method) && !req.is('application/json')) {
+  const hasBody = Number(req.get('Content-Length') || 0) > 0 || Boolean(req.get('Transfer-Encoding'));
+  if (['POST', 'PUT', 'PATCH'].includes(req.method) && hasBody && !req.is('application/json')) {
     return next(new ApiError(415, 'UNSUPPORTED_MEDIA_TYPE', 'Send request bodies as application/json.'));
   }
   const json = res.json;
