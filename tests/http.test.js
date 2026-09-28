@@ -39,7 +39,15 @@ test('non-JSON upload rejected with 415', async () => {
   await request(app).post('/api/v1/auth/login').set('Content-Type', 'text/plain').send('hello').expect(415);
 });
 test('Swagger and the OpenAPI contract are publicly readable', async () => {
-  await request(app).get('/api-docs/').expect(200).expect('Content-Type', /html/);
+  for (const url of ['/api-docs', '/api-docs/']) {
+    const page = await request(app).get(url).expect(200).expect('Content-Type', /html/);
+    expect(page.text).toContain('href="/api-docs/swagger-ui.css"');
+    expect(page.text).toContain('src="/api-docs/swagger-ui-bundle.js"');
+    expect(page.text).toContain('src="/api-docs/swagger-init.js"');
+  }
+  await request(app).get('/api-docs/swagger-ui.css').expect(200).expect('Content-Type', /css/);
+  await request(app).get('/api-docs/swagger-ui-bundle.js').expect(200).expect('Content-Type', /javascript/);
+  await request(app).get('/api-docs/swagger-init.js').expect(200).expect('Content-Type', /javascript/);
   const response = await request(app).get('/openapi.json').expect(200);
   expect(response.body.paths['/api/v1/readings']).toBeDefined();
 });
