@@ -13,6 +13,8 @@ let serverlessDatabaseReady;
 const swaggerAssets = {
   css: require.resolve('swagger-ui-dist/swagger-ui.css'),
   bundle: require.resolve('swagger-ui-dist/swagger-ui-bundle.js'),
+  standalonePreset: require.resolve('swagger-ui-dist/swagger-ui-standalone-preset.js'),
+  favicon: require.resolve('swagger-ui-dist/favicon-32x32.png'),
 };
 app.disable('x-powered-by');
 app.set('etag', false);
@@ -21,6 +23,9 @@ app.use(cors());
 app.use(express.json({ limit: '100kb' }));
 app.get('/api-docs/swagger-ui.css', (req, res) => res.sendFile(swaggerAssets.css));
 app.get('/api-docs/swagger-ui-bundle.js', (req, res) => res.sendFile(swaggerAssets.bundle));
+app.get('/api-docs/swagger-ui-standalone-preset.js', (req, res) => res.sendFile(swaggerAssets.standalonePreset));
+app.get('/api-docs/favicon-32x32.png', (req, res) => res.sendFile(swaggerAssets.favicon));
+app.get('/api-docs/custom.css', (req, res) => res.sendFile(path.join(__dirname, 'public/api-docs/custom.css')));
 app.get('/api-docs/swagger-init.js', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/api-docs/swagger-init.js'));
 });
