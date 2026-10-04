@@ -1,3 +1,7 @@
 .swagger-ui .topbar .download-url-wrapper {
   display: none;
 }
+
+.swagger-ui .scheme-container .servers {
+  display: none;
+}
