@@ -2,6 +2,6 @@
   display: none;
 }
 
-.swagger-ui .scheme-container .schemes-server-container {
+.swagger-ui .scheme-container .schemes > .schemes-server-container {
   display: none;
 }
