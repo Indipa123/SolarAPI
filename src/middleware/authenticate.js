@@ -53,4 +53,10 @@ async function requireInstallationAdmin(req, res, next) {
     next();
   } catch (error) { next(error); }
 }
-module.exports = { authenticate, requireUser, requireDeviceForInstallation, requireInstallationAdmin };
+function requireNationalInstallationAdmin(req, res, next) {
+  if (req.auth.type !== 'USER' || req.auth.role !== 'NATIONAL') {
+    return next(new ApiError(403, 'FORBIDDEN', 'National installation administration permission is required.'));
+  }
+  return requireInstallationAdmin(req, res, next);
+}
+module.exports = { authenticate, requireUser, requireDeviceForInstallation, requireInstallationAdmin, requireNationalInstallationAdmin };

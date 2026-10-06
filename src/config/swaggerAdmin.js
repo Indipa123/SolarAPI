@@ -24,6 +24,25 @@ module.exports = function extend(spec) {
   spec.paths['/api/v1/installations/{installationId}/device-credentials'] = { post: { tags: ['Installation Administration'], security: auth, parameters: [id], summary: 'Provision or rotate device credential',
     description: 'Returns a generated secret once. Existing access tokens remain valid until expiry; deleted installations reject writes.', responses: { 201: { description: 'Store apiKey securely; never publish it', content: json({ type: 'object', properties: { installationId: { type: 'string' }, meterId: { type: 'string' }, apiKey: { type: 'string' }, message: { type: 'string' } } }) }, ...errors } } };
   spec.paths['/api/v1/auth/device-token'] = { post: { tags: ['Authentication'], summary: 'Exchange device credential for installation-scoped JWT', security: [], requestBody: { required: true, content: json({ type: 'object', additionalProperties: false, required: ['meterId','apiKey'], properties: { meterId: { type: 'string' }, apiKey: { type: 'string', minLength: 32, maxLength: 128 } } }) }, responses: { 200: { description: 'Device access token', content: json({ type: 'object', properties: { accessToken: { type: 'string' }, tokenType: { type: 'string' }, expiresIn: { type: 'string' }, installationId: { type: 'string' } } }) }, 400: errors[400], 401: err('Invalid device credentials'), 429: err('Too many authentication attempts') } } };
+  spec.components.schemas.SubstationLocationPatch = { type: 'object', additionalProperties: false, minProperties: 1, properties: {
+    district: { type: 'string', pattern: '^[a-fA-F0-9]{24}$', description: 'Existing destination district.' },
+    latitude: { type: 'number', minimum: -90, maximum: 90 },
+    longitude: { type: 'number', minimum: -180, maximum: 180 },
+  } };
+  spec.paths['/api/v1/substations/{substationId}'].patch = {
+    tags: ['Grid Substations'], summary: 'Update a substation location', security: auth,
+    description: 'Requires a provisioned NATIONAL installation administrator. Changing district moves the substation and its linked installations into the destination jurisdiction without deleting or reassigning installation records. Send the current ETag from GET in If-Match; no upsert.',
+    parameters: [
+      { name: 'substationId', in: 'path', required: true, schema: { type: 'string', pattern: '^[a-fA-F0-9]{24}$' } },
+      { name: 'If-Match', in: 'header', required: true, description: 'Exact strong ETag from substation GET. Wildcard and weak tags are rejected.', schema: { type: 'string' } },
+    ],
+    requestBody: { required: true, content: json(ref('SubstationLocationPatch')) },
+    responses: {
+      200: { description: 'Updated substation', content: json(ref('Substation')), headers: { ETag: { schema: { type: 'string' } } } },
+      400: errors[400], 401: errors[401], 403: err('National administrator permission required'),
+      404: err('Substation or destination district absent'), 412: errors[412], 428: errors[428],
+    },
+  };
   spec.components.schemas.LatestReading = { type: 'object', properties: { installationId: { type: 'string' }, reading: ref('Reading'), observedAt: { type: 'string', format: 'date-time' }, ageSeconds: { type: 'integer' }, isStale: { type: 'boolean' }, freshnessThresholdSeconds: { type: 'integer', example: 1800 } } };
   const latest = spec.paths['/api/v1/installations/{installationId}/latest-reading'].get;
   latest.responses[200].content = json(ref('LatestReading'));
