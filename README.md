@@ -78,6 +78,8 @@ Installation lists accept `page`, `pageSize` (1–100), and `status` (`ACTIVE`, 
 
 The six main collections are `provinces`, `districts`, `gridsubstations`, `solarinstallations`, `generationreadings`, and `users`. Meter and optional inverter identifiers belong to the installation. Readings are separate timestamped documents, with a unique compound installation/timestamp index that supports historical and latest-reading queries in either time direction.
 
+Installation administrators must also remain within their user jurisdiction: NATIONAL administrators can manage all installations, while PROVINCE and DISTRICT administrators can create, update, decommission or rotate device credentials only within their assigned region. Reassignment checks both the current installation and destination substation.
+
 Users have NATIONAL, PROVINCE or DISTRICT roles. Regional roles require their corresponding reference; a district user's province is derived through the district. Password hashes are excluded from default queries and JSON output. Bcrypt login, JWT signature verification and jurisdiction middleware are implemented. Signed tokens missing the required regional scope are rejected. Role changes take effect on new tokens; existing signed tokens remain valid until expiration or signing-secret rotation.
 
 References are not database foreign-key constraints: future services must verify that referenced documents exist. Mongoose's `unique` option declares database indexes, not validation rules. Index uniqueness must also be checked in database integration tests. Readings will have append-only HTTP routes; the schema alone does not prevent database updates.
@@ -89,7 +91,7 @@ npm test
 npm run test:coverage
 ```
 
-The 73 automated tests run without MongoDB and cover model validation, HTTP errors, solar-generation invariants, login, invalid/expired tokens, device scope, jurisdiction checks, analytics, HTTP caching, Swagger, strict reading payload validation, installation concurrency control and device-credential exchange.
+The automated tests run without MongoDB and cover model validation, HTTP errors, solar-generation invariants, login, invalid/expired tokens, device scope, jurisdiction checks, analytics, HTTP caching, Swagger, strict reading payload validation, installation concurrency control and device-credential exchange.
 
 After seeding the data and demo users, `npm run verify:solar` logs in as the national user, performs read-only database-backed HTTP checks, and checks the installed unique reading index. `npm run verify:auth` logs in with all three roles, tests allowed/denied reads, issues a device token in memory, submits one demonstration reading and checks duplicate rejection. Credentials and tokens are never printed. These scripts require Atlas connectivity and development dependencies.
 

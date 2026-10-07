@@ -52,6 +52,24 @@ exports.district = guard(async (id) => {
 }, 'districtId');
 exports.substation = guard(regionForSubstation, 'substationId');
 exports.installation = guard(regionForInstallation, 'installationId');
+exports.installationAdministration = async (req, res, next) => {
+  try {
+    // National administrators can manage all regions. Regional administrators
+    // must be allowed in both the current and proposed destination jurisdiction.
+    if (req.auth.role === 'NATIONAL') return next();
+    if (req.params.installationId) {
+      const id = ensureObjectId(req.params.installationId, 'installationId');
+      const region = await regionForInstallation(id);
+      if (region) await assertAccess(req.auth, region.provinceId, region.districtId);
+    }
+    if ((!req.params.installationId || ['PUT', 'PATCH'].includes(req.method)) && req.body?.substation !== undefined) {
+      const id = ensureObjectId(req.body.substation, 'substation');
+      const region = await regionForSubstation(id);
+      if (region) await assertAccess(req.auth, region.provinceId, region.districtId);
+    }
+    return next();
+  } catch (error) { return next(error); }
+};
 exports.provinceList = async (req, res, next) => {
   try {
     if (req.auth.role === 'NATIONAL') return next();

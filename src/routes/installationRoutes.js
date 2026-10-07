@@ -20,14 +20,14 @@ router.post('/installations/:installationId/readings', authenticate, requireDevi
 const admin = require('../services/installationAdmin');
 const { requireInstallationAdmin } = require('../middleware/authenticate');
 const { installationTag } = require('../utils/entityTag');
-router.post('/installations/:installationId/device-credentials', authenticate, requireInstallationAdmin,
+router.post('/installations/:installationId/device-credentials', authenticate, requireInstallationAdmin, jurisdiction.installationAdministration,
   asyncHandler(require('../controllers/deviceAuthController').rotate));
-router.post('/installations', authenticate, requireInstallationAdmin, asyncHandler(async (req, res) => {
+router.post('/installations', authenticate, requireInstallationAdmin, jurisdiction.installationAdministration, asyncHandler(async (req, res) => {
   const item = await admin.create(req.body);
   res.location(`/api/v1/installations/${item._id}`).set('ETag', installationTag(item)).status(201).json(item);
 }));
 for (const method of ['put', 'patch', 'delete']) {
-  router[method]('/installations/:installationId', authenticate, requireInstallationAdmin, asyncHandler(async (req, res) => {
+  router[method]('/installations/:installationId', authenticate, requireInstallationAdmin, jurisdiction.installationAdministration, asyncHandler(async (req, res) => {
     const item = await admin.mutate(req.params.installationId, req.get('If-Match'), req.body, method.toUpperCase());
     if (method === 'delete') return res.status(204).end();
     res.set('ETag', installationTag(item)).json(item);
